@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f compose/3/docker-compose.yml convert -o gitlab --volumes hostPath --service-group-name gitlab -c
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: gitlab
+  name: gitlab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: gitlab
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose -f compose/3/docker-compose.yml convert -o gitlab --volumes hostPath --service-group-name gitlab -c
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: gitlab
+    spec:
+      containers:
+        - image: gitlab/gitlab-ce:latest
+          name: gitlab
+          ports:
+            - containerPort: 22
+            - containerPort: 4430
+          resources: {}
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /etc/gitlab
+              name: nfs-gitlabconf
+            - mountPath: /var/log/gitlab
+              name: nfs-gitlablogs
+            - mountPath: /var/opt/gitlab
+              name: nfs-gitlabdata
+      restartPolicy: Always
+      volumes:
+        - hostPath:
+            path: /mnt/SSD_ENTERPRISE/gitlab/logs
+          name: nfs-gitlabconf
+        - hostPath:
+            path: /mnt/SSD_ENTERPRISE/gitlab/conf
+          name: nfs-gitlablogs
+        - hostPath:
+            path: /mnt/SSD_ENTERPRISE/gitlab/data
+          name: nfs-gitlabdata
+status: {}

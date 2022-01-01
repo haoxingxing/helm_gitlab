@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f compose/3/docker-compose.yml convert -o gitlab --volumes hostPath --service-group-name gitlab -c
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: gitlab-runner-1
+  name: gitlab-runner-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: gitlab-runner-1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose -f compose/3/docker-compose.yml convert -o gitlab --volumes hostPath --service-group-name gitlab -c
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: gitlab-runner-1
+    spec:
+      containers:
+        - image: gitlab/gitlab-runner
+          name: gitlab-runner-1
+          resources: {}
+          volumeMounts:
+            - mountPath: /etc/gitlab-runner
+              name: nfs-gitlabrun2
+            - mountPath: /var/run/docker.sock
+              name: gitlab-runner-1-hostpath1
+      restartPolicy: Always
+      volumes:
+        - hostPath:
+            path: /mnt/SSD_ENTERPRISE/gitlab/runners/gitlab-runner-1
+          name: nfs-gitlabrun2
+        - hostPath:
+            path: /var/run/docker.sock
+          name: gitlab-runner-1-hostpath1
+status: {}
